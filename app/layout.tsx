@@ -32,7 +32,7 @@ export default function RootLayout({
           <h1 className="font-semibold">Notes Synterra</h1>
           <Icon.Logo />
         </aside>
-        <main className="relative w-full h-full">
+        <main className="p-4 relative w-full h-full grid grid-cols-5 gap-3 auto-rows-auto overflow-auto">
           {children}
           <AddButtonWithModal />
         </main>

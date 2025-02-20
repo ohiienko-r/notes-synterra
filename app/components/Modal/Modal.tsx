@@ -12,12 +12,6 @@ type ModalPropTypes = {
 function Modal({ open, onClose, children }: ModalPropTypes) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
-    if (open && dialogRef.current) {
-      dialogRef.current.showModal();
-    }
-  }, [open]);
-
   const handleCloseModal = useCallback(() => {
     if (dialogRef.current) {
       dialogRef.current.close();
@@ -25,15 +19,25 @@ function Modal({ open, onClose, children }: ModalPropTypes) {
     }
   }, [onClose]);
 
+  useEffect(() => {
+    if (dialogRef.current) {
+      if (open) {
+        dialogRef.current.showModal();
+      } else {
+        handleCloseModal();
+      }
+    }
+  }, [open, handleCloseModal]);
+
   return (
     <dialog
       ref={dialogRef}
-      className="p-1 border border-solid border-gray-600 rounded-lg"
+      className="p-1 border border-solid border-gray-600 rounded-lg w-1/4"
     >
-      <div>
+      <div className="flex justify-end">
         <button
           onClick={handleCloseModal}
-          className="border-none outline-none p-0 m-0 bg-none"
+          className="border-none outline-none p-0 m-0 bg-none hover:text-[#af95d6] transition-colors"
         >
           <Icon.Close />
         </button>

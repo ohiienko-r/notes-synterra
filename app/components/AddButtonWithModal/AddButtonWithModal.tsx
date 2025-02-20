@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { Icon, Modal } from "..";
 
 function AddButtonWithModal() {
@@ -14,16 +14,52 @@ function AddButtonWithModal() {
     setModalVisible(false);
   }, []);
 
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+
+      const name = formData.get("name");
+      const note = formData.get("note");
+
+      console.log({ name, note });
+
+      handleOnClose();
+    },
+    [handleOnClose]
+  );
+
   return (
     <>
       <button
-        className="border-none outline-none p-0 m-0 bg-none absolute bottom-5 right-5 z-10 w-10 h-10 flex justify-center items-center bg-[#c395d5] rounded-full"
+        className="border-none outline-none p-0 m-0 bg-none fixed bottom-5 right-5 z-10 w-12 h-12 flex justify-center items-center bg-[#c395d5] rounded-full hover:bg-[#a07bd6] transition-colors"
         onClick={handleShowModal}
       >
         <Icon.Add />
       </button>
       <Modal open={modalVisible} onClose={handleOnClose}>
-        <form></form>
+        <form
+          onSubmit={handleSubmit}
+          className="p-1 flex flex-col gap-3 text-black"
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            className="p-2 rounded-md outline-none focus:outline-[#af95d6]"
+          />
+          <textarea
+            name="note"
+            placeholder="Create note..."
+            className="p-2 rounded-md outline-none focus:outline-[#af95d6]"
+            rows={10}
+          ></textarea>
+          <input
+            type="submit"
+            value="Create"
+            className="py-2 px-4 rounded-md bg-[#af95d6] cursor-pointer font-medium text-white hover:bg-[#a07bd6] transition-colors"
+          />
+        </form>
       </Modal>
     </>
   );

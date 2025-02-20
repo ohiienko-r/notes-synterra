@@ -9,7 +9,7 @@ type NotePropTypes = {
 
 function Note({ userId, id, title, body }: NotePropTypes) {
   return (
-    <div className="bg-[#eacb5e] text-black h-fit p-1 rounded-lg cursor-pointer">
+    <div className="bg-[#2a1222] h-fit p-2 border border-[#817e89] rounded-md cursor-pointer">
       <h2 className="font-bold">{title}</h2>
       <p className="mt-2">{body}</p>
     </div>

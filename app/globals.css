@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ece7f6;
+  --foreground: #06040a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #06040a;
+    --foreground: #ece7f6;
   }
 }
 
@@ -21,11 +21,14 @@ body {
   height: 100dvh;
   width: 100vw;
   display: flex;
+  gap: 8px;
+  padding: 8px;
 }
 
 * {
   box-sizing: border-box;
   scrollbar-width: thin;
+  scrollbar-color: #af95d6 #0e0c12;
 }
 
 dialog {

@@ -23,6 +23,7 @@ function AddButtonWithModal() {
       const note = formData.get("note");
 
       console.log({ name, note });
+      e.currentTarget.reset();
 
       handleOnClose();
     },
@@ -32,26 +33,23 @@ function AddButtonWithModal() {
   return (
     <>
       <button
-        className="border-none outline-none p-0 m-0 bg-none fixed bottom-5 right-5 z-10 w-12 h-12 flex justify-center items-center bg-[#c395d5] rounded-full hover:bg-[#a07bd6] transition-colors"
+        className="border-none outline-none p-0 m-0 bg-none fixed bottom-6 right-8 z-10 w-12 h-12 flex justify-center items-center bg-[#c395d5] rounded-full hover:bg-[#a07bd6] transition-colors"
         onClick={handleShowModal}
       >
         <Icon.Add />
       </button>
       <Modal open={modalVisible} onClose={handleOnClose}>
-        <form
-          onSubmit={handleSubmit}
-          className="p-1 flex flex-col gap-3 text-black"
-        >
+        <form onSubmit={handleSubmit} className="p-1 flex flex-col gap-3 ">
           <input
             type="text"
             name="name"
             placeholder="Name"
-            className="p-2 rounded-md outline-none focus:outline-[#af95d6]"
+            className="p-2 outline-none bg-inherit border-b border-[#817e89]"
           />
           <textarea
             name="note"
             placeholder="Create note..."
-            className="p-2 rounded-md outline-none focus:outline-[#af95d6]"
+            className="p-2 outline-none bg-inherit border-b border-[#817e89] resize-none"
             rows={10}
           ></textarea>
           <input

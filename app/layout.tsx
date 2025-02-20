@@ -28,11 +28,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <aside className="p-4 border-r-2 border-solid border-gray-600 w-[300px] flex justify-between">
-          <h1 className="font-semibold">Notes Synterra</h1>
-          <Icon.Logo />
+        <aside className="p-4 rounded-lg w-[300px] bg-[#0e0c12]">
+          <h1 className="font-extrabold flex gap-2 items-center">
+            Notes Synterra <Icon.Logo />
+          </h1>
         </aside>
-        <main className="p-4 relative w-full h-full grid grid-cols-5 gap-3 auto-rows-auto overflow-auto">
+        <main className="p-4 relative w-full h-full grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3 auto-rows-auto overflow-auto bg-[#0e0c12] rounded-lg">
           {children}
           <AddButtonWithModal />
         </main>

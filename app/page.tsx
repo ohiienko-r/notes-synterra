@@ -1,18 +1,13 @@
-import { Note } from "./components";
 import { fetchPosts } from "./actions";
+import { NotesList } from "./components";
 
 export default async function Home() {
   const posts = await fetchPosts();
 
   if (!posts) {
     console.error("Failed to fetch posts!");
+    return <>No data to display...</>;
   }
 
-  return (
-    <>
-      {posts?.map(({ userId, id, title, body }) => (
-        <Note key={id} userId={userId} id={id} title={title} body={body} />
-      ))}
-    </>
-  );
+  return <NotesList data={posts} />;
 }

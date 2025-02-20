@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useCallback, useState } from "react";
-import { Icon, Modal } from "..";
+import { useCallback, useState } from "react";
+import { Icon, Modal, UniversalForm } from "..";
 
 function AddButtonWithModal() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -15,15 +15,8 @@ function AddButtonWithModal() {
   }, []);
 
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-
-      const name = formData.get("name");
-      const note = formData.get("note");
-
-      console.log({ name, note });
-      e.currentTarget.reset();
+    (title: string | null, body: string | null) => {
+      console.log({ title, body });
 
       handleOnClose();
     },
@@ -39,25 +32,7 @@ function AddButtonWithModal() {
         <Icon.Add />
       </button>
       <Modal open={modalVisible} onClose={handleOnClose}>
-        <form onSubmit={handleSubmit} className="p-1 flex flex-col gap-3 ">
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            className="p-2 outline-none bg-inherit border-b border-[#817e89]"
-          />
-          <textarea
-            name="note"
-            placeholder="Create note..."
-            className="p-2 outline-none bg-inherit border-b border-[#817e89] resize-none"
-            rows={10}
-          ></textarea>
-          <input
-            type="submit"
-            value="Create"
-            className="py-2 px-4 rounded-md bg-[#af95d6] cursor-pointer font-medium text-white hover:bg-[#a07bd6] transition-colors"
-          />
-        </form>
+        <UniversalForm onSubmit={handleSubmit} />
       </Modal>
     </>
   );

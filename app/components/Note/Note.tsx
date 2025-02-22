@@ -2,15 +2,15 @@
 
 import { MouseEvent } from "react";
 import { Icon } from "..";
-import { Post } from "@/app/types";
+import { NoteItem } from "@/app/types";
 
 type NotePropTypes = {
   userId: number;
-  id: number;
+  id: string;
   title: string;
   body: string;
-  onEdit: (note: Post) => void;
-  onDelete: (id: number) => void;
+  onEdit: (note: NoteItem) => void;
+  onDelete: (id: string) => void;
 };
 
 function Note({ userId, id, title, body, onEdit, onDelete }: NotePropTypes) {

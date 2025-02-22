@@ -28,9 +28,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <aside className="p-4 rounded-lg w-[300px] bg-[#0e0c12]">
-          <h1 className="font-extrabold flex gap-2 items-center">
-            Notes Synterra <Icon.Logo />
+        <aside className="p-4 rounded-lg w-fit bg-[#0e0c12]">
+          <h1 className="font-extrabold flex gap-2 items-center text-[#af95d6]">
+            <span className="text-white max-sm:hidden">Synterra</span>{" "}
+            <span className="max-[480px]:hidden">Notes</span>
+            <Icon.Logo />
           </h1>
         </aside>
         <main className="p-4 relative w-full h-full grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3 auto-rows-auto overflow-auto bg-[#0e0c12] rounded-lg">

@@ -32,7 +32,7 @@ function Modal({ open, onClose, children }: ModalPropTypes) {
   return (
     <dialog
       ref={dialogRef}
-      className="p-1 border border-solid border-gray-600 rounded-lg w-1/4"
+      className="p-1 border border-solid border-gray-600 rounded-lg w-1/4 max-xl:w-1/3 max-lg:w-1/2 max-sm:w-10/12"
     >
       <div className="flex justify-end">
         <button

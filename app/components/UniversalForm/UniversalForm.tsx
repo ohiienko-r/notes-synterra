@@ -19,7 +19,10 @@ function UniversalForm({ title, body, onSubmit }: UniversalFormPropTypes) {
 
       e.currentTarget.reset();
 
-      onSubmit(name as string, note as string);
+      onSubmit(
+        typeof name === "string" ? name : null,
+        typeof note === "string" ? note : null
+      );
     },
     [onSubmit]
   );

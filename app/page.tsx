@@ -1,13 +1,90 @@
-import { fetchPosts } from "./actions";
-import { NotesList } from "./components";
+"use client";
 
-export default async function Home() {
-  const posts = await fetchPosts();
+import { useState, useEffect } from "react";
+import { addRxPlugin } from "rxdb/plugins/core";
+import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+import { db, closeNotesCollection } from "./db";
+import { fetchNotes } from "./actions";
+import { NotesList, Modal } from "./components";
+import { NoteItem, ResponseError } from "./types";
 
-  if (!posts) {
-    console.error("Failed to fetch posts!");
-    return <>No data to display...</>;
-  }
+addRxPlugin(RxDBDevModePlugin);
 
-  return <NotesList data={posts} />;
+export default function Home() {
+  const [data, setData] = useState<NoteItem[] | null>(null);
+  const [error, setError] = useState<ResponseError | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      closeNotesCollection().catch(console.error);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function initialize() {
+      if (!db.notes) return;
+      try {
+        //As long as I understood the task and
+        //API doesn't persist changes I desided to implement
+        //posts fetching only in case local DB's collection is empty
+        //and app is online, otherwise local data is used.
+        const existingNotes = await db.notes.find().exec();
+
+        if (existingNotes.length === 0 && window.navigator.onLine) {
+          const response = await fetchNotes();
+
+          if (!Array.isArray(response)) {
+            setError(response);
+            return;
+          }
+
+          if (response && response.length > 0) {
+            await db.notes.bulkInsert(response);
+          }
+        }
+
+        setIsInitialized(true);
+      } catch (error) {
+        console.error("Error initializing:", error);
+        setIsInitialized(true);
+      }
+    }
+
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    if (!isInitialized || !db.notes) return;
+
+    const subscription = db.notes.find().$.subscribe((docs) => {
+      const notesData = docs.map((d) => d.toJSON());
+      setData(notesData);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [isInitialized]);
+
+  const handleErrorModalClose = () => {
+    setIsInitialized(true);
+    setError(null);
+  };
+
+  return (
+    <>
+      <NotesList data={data} />
+      <Modal open={!!error} onClose={handleErrorModalClose}>
+        <div className="p-4 flex flex-col gap-2">
+          <h2 className="font-bold text-red-500">Error!</h2>
+          <p>{`An error occured while fetchig notes data: ${error?.statusText}`}</p>
+          <button
+            onClick={handleErrorModalClose}
+            className="py-2 px-4 bg-red-500 self-end rounded-lg font-bold"
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
+    </>
+  );
 }

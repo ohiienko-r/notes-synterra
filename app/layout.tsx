@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ErrorProvider } from "./Contexts";
 import { Icon, AddButtonWithModal } from "./components";
 import "./globals.css";
 
@@ -36,8 +37,10 @@ export default function RootLayout({
           </h1>
         </aside>
         <main className="p-4 relative w-full h-full grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3 auto-rows-auto overflow-auto bg-[#0e0c12] rounded-lg">
-          {children}
-          <AddButtonWithModal />
+          <ErrorProvider>
+            {children}
+            <AddButtonWithModal />
+          </ErrorProvider>
         </main>
       </body>
     </html>

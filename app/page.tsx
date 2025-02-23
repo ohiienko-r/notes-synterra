@@ -1,19 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addRxPlugin } from "rxdb/plugins/core";
-import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 import { db, closeNotesCollection } from "./db";
-import { fetchNotes } from "./actions";
+import { useError } from "./Contexts";
 import { NotesList, Modal } from "./components";
-import { NoteItem, ResponseError } from "./types";
-
-addRxPlugin(RxDBDevModePlugin);
+import { fetchNotes } from "./actions";
+import { NoteItem } from "./types";
 
 export default function Home() {
   const [data, setData] = useState<NoteItem[] | null>(null);
-  const [error, setError] = useState<ResponseError | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const { statusText, setError, resetError } = useError();
 
   useEffect(() => {
     return () => {
@@ -52,7 +49,7 @@ export default function Home() {
     }
 
     initialize();
-  }, []);
+  }, [setError]);
 
   useEffect(() => {
     if (!isInitialized || !db.notes) return;
@@ -67,16 +64,16 @@ export default function Home() {
 
   const handleErrorModalClose = () => {
     setIsInitialized(true);
-    setError(null);
+    resetError();
   };
 
   return (
     <>
       <NotesList data={data} />
-      <Modal open={!!error} onClose={handleErrorModalClose}>
+      <Modal open={!!statusText} onClose={handleErrorModalClose}>
         <div className="p-4 flex flex-col gap-2">
           <h2 className="font-bold text-red-500">Error!</h2>
-          <p>{`An error occured while fetchig notes data: ${error?.statusText}`}</p>
+          <p>{`An error occured: ${statusText}`}</p>
           <button
             onClick={handleErrorModalClose}
             className="py-2 px-4 bg-red-500 self-end rounded-lg font-bold"

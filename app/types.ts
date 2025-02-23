@@ -5,4 +5,7 @@ export type NoteItem = {
   body: string;
 };
 
-export type ResponseError = { status: number; statusText: string };
+export type ResponseError = {
+  status: number | undefined;
+  statusText: string | undefined;
+};

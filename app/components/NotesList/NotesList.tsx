@@ -1,10 +1,13 @@
 "use client";
 
 import { memo, useState, useCallback, useMemo } from "react";
+import { useError } from "@/app/Contexts";
 import Note from "../Note/Note";
 import Modal from "../Modal/Modal";
 import UniversalForm from "../UniversalForm/UniversalForm";
 import Loader from "../Loader/Loader";
+import { updateNote, deleteNote } from "@/app/actions";
+import { updateNoteLocal, deleteNoteLocal } from "@/app/db";
 import { NoteItem } from "@/app/types";
 
 type NotesListPropTypes = {
@@ -13,6 +16,7 @@ type NotesListPropTypes = {
 
 const NotesList = memo(function NotesList({ data }: NotesListPropTypes) {
   const [selected, setSelected] = useState<NoteItem | null>(null);
+  const { setError } = useError();
 
   const handleShowModal = useCallback((note: NoteItem) => {
     setSelected(note);
@@ -22,12 +26,65 @@ const NotesList = memo(function NotesList({ data }: NotesListPropTypes) {
     setSelected(null);
   }, []);
 
-  const handleSubmit = useCallback(
-    (title: string | null, body: string | null) => {
-      console.log({ title, body });
+  const handleUpdateNote = useCallback(
+    async (title: string | null, body: string | null) => {
       handleOnClose();
+
+      if (!selected) return;
+
+      try {
+        await updateNoteLocal(selected.id, {
+          title: title ?? "",
+          body: body ?? "",
+        });
+      } catch (e) {
+        console.error(e);
+        setError({ status: 500, statusText: JSON.stringify(e) });
+        return;
+      }
+
+      //As long as sync is not required we'll just send a request
+      //if there is an internet connection. However for a future implementations
+      //we'll have to get a response from endpoint for sync purposes.
+      if (window.navigator.onLine) {
+        const response = await updateNote(selected.id, title ?? "", body ?? "");
+
+        if ("status" in response) {
+          console.error(
+            `Failed to update note: ${response.status} - ${response.statusText}`
+          );
+          setError(response);
+        }
+      }
     },
-    [handleOnClose]
+    [selected, handleOnClose, setError]
+  );
+
+  const handleDeleteNote = useCallback(
+    async (id: string) => {
+      try {
+        await deleteNoteLocal(id);
+      } catch (e) {
+        console.error(e);
+        setError({ status: 500, statusText: JSON.stringify(e) });
+        return;
+      }
+
+      //As long as sync is not required we'll just send a request
+      //if there is an internet connection. However for a future implementations
+      //we'll have to get a response from endpoint for sync purposes
+      if (window.navigator.onLine) {
+        const result = await deleteNote(id);
+
+        if (result) {
+          console.error(
+            `Failed to delete note: ${result.status} - ${result.statusText}`
+          );
+          setError(result);
+        }
+      }
+    },
+    [setError]
   );
 
   const memoizedNotesList = useMemo(() => {
@@ -39,10 +96,10 @@ const NotesList = memo(function NotesList({ data }: NotesListPropTypes) {
         title={note.title}
         body={note.body}
         onEdit={handleShowModal}
-        onDelete={() => {}}
+        onDelete={handleDeleteNote}
       />
     ));
-  }, [data, handleShowModal]);
+  }, [data, handleShowModal, handleDeleteNote]);
 
   if (!data) {
     return <Loader />;
@@ -55,7 +112,7 @@ const NotesList = memo(function NotesList({ data }: NotesListPropTypes) {
         <UniversalForm
           title={selected?.title}
           body={selected?.body}
-          onSubmit={handleSubmit}
+          onSubmit={handleUpdateNote}
         />
       </Modal>
     </>

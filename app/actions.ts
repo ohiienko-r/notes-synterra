@@ -1,12 +1,11 @@
 "use server";
 
 import { NoteItem, ResponseError } from "./types";
-import { randomUUID } from "node:crypto";
 
-export async function getRandomUUID() {
-  return randomUUID();
-}
-
+/**
+ * Fetches a posts from mock API.
+ * @returns a list of posts from remote server
+ */
 export async function fetchNotes(): Promise<NoteItem[] | ResponseError> {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts");
@@ -40,6 +39,14 @@ export async function fetchNotes(): Promise<NoteItem[] | ResponseError> {
   }
 }
 
+/**
+ * Creates new note record in mock server.
+ * @param {string} id - note ID.
+ * @param {number} userId - user ID.
+ * @param {string} title - note title.
+ * @param {string} body - note text.
+ * @returns - resulting new note object or error object.
+ */
 export async function createNote(
   id: string,
   userId: number,
@@ -67,6 +74,13 @@ export async function createNote(
   }
 }
 
+/**
+ * Updates a note record in mock server.
+ * @param {string} id - ntoe ID.
+ * @param {string} title - note title.
+ * @param {string} body - note text.
+ * @returns an object with updated note fileds and ID.
+ */
 export async function updateNote(
   id: string,
   title: string,
@@ -89,13 +103,18 @@ export async function updateNote(
       return { status: response.status, statusText: response.statusText };
     }
 
-    return response;
+    return await response.json();
   } catch (e) {
     console.error(e);
     return { status: 500, statusText: JSON.stringify(e) };
   }
 }
 
+/**
+ * Deletes a note record in mock server.
+ * @param {string} id - note ID.
+ * @returns either void or Error object in case of error.
+ */
 export async function deleteNote(id: string): Promise<void | ResponseError> {
   try {
     const response = await fetch(

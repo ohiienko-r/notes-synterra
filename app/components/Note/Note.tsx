@@ -1,6 +1,5 @@
 "use client";
-
-import { MouseEvent } from "react";
+import React from "react";
 import { Icon } from "..";
 import { NoteItem } from "@/app/types";
 
@@ -14,18 +13,16 @@ type NotePropTypes = {
 };
 
 function Note({ userId, id, title, body, onEdit, onDelete }: NotePropTypes) {
-  const handleEdit = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleEdit = () => {
     onEdit({ userId, id, title, body });
   };
 
-  const handleDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleDelete = () => {
     onDelete(id);
   };
 
   return (
-    <div className="bg-[#2a1222] h-fit border border-[#817e89] rounded-md cursor-pointer">
+    <div className="bg-[#2a1222] h-fit border border-[#817e89] rounded-md">
       <h2 className="font-bold p-2 border-b border-[#817e89]">{title}</h2>
       <p className="mt-2 p-2 border-b border-[#817e89]">{body}</p>
       <div className="p-2 flex items-center justify-end gap-2">

@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useError } from "@/app/Contexts";
 import { Icon, Modal, UniversalForm } from "..";
 import { createNoteLocal } from "@/app/db";
-import { createNote, getRandomUUID } from "@/app/actions";
+import { createNote } from "@/app/actions";
 
+//The resason why is this component separated - to isolate state update
+//so the whole list doesn't unnecesserily rerenders
 function AddButtonWithModal() {
   const [modalVisible, setModalVisible] = useState(false);
+  const { setError } = useError();
 
   const handleShowModal = useCallback(() => {
     setModalVisible(true);
@@ -20,8 +24,28 @@ function AddButtonWithModal() {
     async (title: string | null, body: string | null) => {
       handleOnClose();
 
+      const generatedNoteId =
+        window.crypto?.randomUUID?.() ||
+        `offline-${Math.random() * 1000000000}`;
+
+      try {
+        await createNoteLocal({
+          id: generatedNoteId,
+          userId: 1,
+          title: title ?? "",
+          body: body ?? "",
+        });
+      } catch (e) {
+        console.error(e);
+        setError({ status: 500, statusText: JSON.stringify(e) });
+        return;
+      }
+
+      //As long as sync is not required we'll just send a request
+      //if there is an internet connection. However for a future implementations
+      //we'll have to get a response from endpoint to update an ID localy
+      //because API generates it in response to post creation
       if (window.navigator.onLine) {
-        const generatedNoteId = await getRandomUUID();
         const response = await createNote(
           generatedNoteId,
           1,
@@ -30,27 +54,14 @@ function AddButtonWithModal() {
         );
 
         if ("status" in response) {
-          //TODO: throw an error
-          return;
+          console.error(
+            `Failed to create a note: ${response.status} - ${response.statusText}`
+          );
+          setError(response);
         }
-
-        //Because of the primary key must be a string,
-        //I had to mutate a response
-        const newNote = { ...response, id: JSON.stringify(response.id) };
-
-        console.log(newNote);
-
-        await createNoteLocal(newNote);
-      } else {
-        await createNoteLocal({
-          id: JSON.stringify(Math.random() * 1000000000),
-          userId: 1,
-          title: title ?? "",
-          body: body ?? "",
-        });
       }
     },
-    [handleOnClose]
+    [handleOnClose, setError]
   );
 
   return (
